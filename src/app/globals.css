@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Estilos para el sidebar móvil */
+@media (max-width: 1023px) {
+  body.sidebar-open {
+    overflow: hidden;
+  }
+}
+
+/* Mejoras para el overlay del sidebar */
+.sidebar-overlay {
+  backdrop-filter: blur(2px);
+}
+
+/* Asegurar que el contenido principal sea visible */
+.main-content {
+  position: relative;
+  z-index: 40;
+}
+
+/* Asegurar que el contenido principal esté por encima del overlay en móvil */
+@media (max-width: 1023px) {
+  .main-content {
+    z-index: 40;
+  }
+}
+
+/* Estilos para el menú móvil del header */
+.mobile-menu-enter {
+  transform: translateX(100%);
+}
+
+.mobile-menu-enter-active {
+  transform: translateX(0%);
+  transition: transform 300ms ease-in-out;
+}
+
+.mobile-menu-exit {
+  transform: translateX(0%);
+}
+
+.mobile-menu-exit-active {
+  transform: translateX(100%);
+  transition: transform 300ms ease-in-out;
+}
