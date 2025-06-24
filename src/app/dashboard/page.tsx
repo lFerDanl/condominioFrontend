@@ -12,6 +12,8 @@ import ActivityLog from '../../components/dashboard/ActivityLog';
 import CamaraModal from '../../components/dashboard/CamaraModal';
 import ModeloIAModal from '../../components/dashboard/ModeloIAModal';
 
+import VideoStreem from '../../components/dashboard/VideoStreem';
+
 export default function DashboardPage() {
   const {
     camaras,
@@ -41,6 +43,7 @@ export default function DashboardPage() {
   const [editingCamera, setEditingCamera] = useState<Camara | null>(null);
   const [modeloIAModalOpen, setModeloIAModalOpen] = useState(false);
   const [editingModeloIA, setEditingModeloIA] = useState<ModeloIA | null>(null);
+  const [videoMode, setVideoMode] = useState<'feed' | 'stream'>('feed');
 
   useEffect(() => {
     fetchModelosIA();
@@ -206,16 +209,45 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             {/* Video Feed - Takes up 2/3 of the space on xl screens */}
             <div className="xl:col-span-2">
-              <VideoFeed
-                camara={selectedCamera || null}
-                isRecording={isRecording}
-                setIsRecording={setIsRecording}
-                isMuted={isMuted}
-                setIsMuted={setIsMuted}
-                sidebarOpen={sidebarOpen}
-                setSidebarOpen={setSidebarOpen}
-                onEditCamera={handleEditCamera}
-              />
+              {/* Selector de modo de video */}
+              <div className="mb-4 flex space-x-2">
+                <button
+                  onClick={() => setVideoMode('feed')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    videoMode === 'feed'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                >
+                  Video Feed
+                </button>
+                <button
+                  onClick={() => setVideoMode('stream')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    videoMode === 'stream'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                >
+                  Video Stream
+                </button>
+              </div>
+
+              {/* Renderizado condicional de componentes de video */}
+              {videoMode === 'feed' ? (
+                <VideoFeed
+                  camara={selectedCamera || null}
+                  isRecording={isRecording}
+                  setIsRecording={setIsRecording}
+                  isMuted={isMuted}
+                  setIsMuted={setIsMuted}
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                  onEditCamera={handleEditCamera}
+                />
+              ) : (
+                <VideoStreem />
+              )}
             </div>
 
             {/* Right Sidebar - Takes up 1/3 of the space on xl screens */}

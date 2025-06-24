@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Camera, Phone, Mail, Calendar, MapPin, Save, Home } from 'lucide-react';
-import { Residente, Vivienda, createResidente, updateResidente } from '../../../services/residentes';
+import { Residente, Vivienda, createResidente, createVivienda, deleteResidente, updateResidente, updateVivienda } from '../../../services/residentes';
 
 interface ResidentModalProps {
   showModal: boolean;
-  modalType: 'view' | 'edit' | 'create';
+  modalType: 'view' | 'edit' | 'create' | 'delete';
   selectedResident: Residente | null;
   handleCloseModal: () => void;
   onRefresh: () => void;
@@ -87,17 +87,65 @@ const ResidentModal: React.FC<ResidentModalProps> = ({
 
     try {
       if (modalType === 'create') {
-        const result = await createResidente(formData as any);
-        if (result) {
+        const viviendaData = {
+          numero: formData.vivienda?.numero,
+          bloque: formData.vivienda?.bloque,
+          zona: formData.vivienda?.zona
+        };
+        const result = await createVivienda(viviendaData as any);
+        formData.viviendaId = result?.id || 0;
+
+        const residenteData = {
+          nombre: formData.nombre,
+          apellido_paterno: formData.apellido_paterno,
+          apellido_materno: formData.apellido_materno,
+          ci: formData.ci,
+          telefono: formData.telefono,
+          email: formData.email,
+          fecha_nacimiento: formData.fecha_nacimiento,
+          viviendaId: formData.viviendaId,  
+          foto_registrada: formData.foto_registrada,
+          fecha_registro: formData.fecha_registro
+        };
+        const result2 = await createResidente(residenteData as any);
+
+        if (result && result2) {
           onRefresh();
           handleCloseModal();
         }
       } else if (modalType === 'edit' && selectedResident) {
-        const result = await updateResidente(selectedResident.id, formData);
-        if (result) {
+        const viviendaData = {
+          numero: formData.vivienda?.numero,
+          bloque: formData.vivienda?.bloque,
+          zona: formData.vivienda?.zona
+        };
+        const result2 = await updateVivienda(selectedResident.viviendaId, viviendaData as any);
+        const residenteData = {
+          nombre: formData.nombre,
+          apellido_paterno: formData.apellido_paterno,
+          apellido_materno: formData.apellido_materno,
+          ci: formData.ci,
+          telefono: formData.telefono,
+          email: formData.email,
+          fecha_nacimiento: formData.fecha_nacimiento,
+          viviendaId: formData.viviendaId,
+          foto_registrada: formData.foto_registrada,
+          fecha_registro: formData.fecha_registro
+        };
+        const result = await updateResidente(selectedResident.id, residenteData as any);
+        if (result2 && result) {
           onRefresh();
           handleCloseModal();
         }
+      }else{
+        /*+if(modalType === 'delete'){
+          const result2 = await deleteVivienda(selectedResident?.viviendaId || 0);
+          const result = await deleteResidente(selectedResident?.id || 0);
+          if (result) {
+            onRefresh();
+            handleCloseModal();
+          }
+        }*/
       }
     } catch (error) {
       console.error('Error al guardar residente:', error);
