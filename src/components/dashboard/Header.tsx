@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Shield, Settings, ChevronDown, Users, UserCheck, Camera, FileText, Home, X } from 'lucide-react';
+import { Menu, Shield, Settings, ChevronDown, Users, UserCheck, Camera, FileText, Home, X, LogOut, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../../contexts/AuthContext';
 
 type HeaderProps = {
   sidebarOpen: boolean;
@@ -49,10 +50,11 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, title, description, onClick }
 );
 
 // Componente para el menú móvil de navegación
-const MobileNavigationMenu: React.FC<{ isOpen: boolean; onClose: () => void; onNavigation: (page: string) => void }> = ({ 
+const MobileNavigationMenu: React.FC<{ isOpen: boolean; onClose: () => void; onNavigation: (page: string) => void; onLogout: () => void }> = ({ 
   isOpen, 
   onClose, 
-  onNavigation 
+  onNavigation,
+  onLogout
 }) => {
   if (!isOpen) return null;
 
@@ -195,6 +197,24 @@ const MobileNavigationMenu: React.FC<{ isOpen: boolean; onClose: () => void; onN
               </button>
             </div>
           </div>
+
+          {/* Usuario */}
+          <div>
+            <h3 className="text-sm font-medium text-gray-400 mb-2">USUARIO</h3>
+            <button
+              onClick={() => {
+                onLogout();
+                onClose();
+              }}
+              className="w-full flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-red-600 transition-colors"
+            >
+              <LogOut className="h-5 w-5 text-red-400" />
+              <div className="text-left">
+                <p className="text-sm font-medium">Cerrar Sesión</p>
+                <p className="text-xs text-gray-400">Salir del sistema</p>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </>
@@ -203,6 +223,7 @@ const MobileNavigationMenu: React.FC<{ isOpen: boolean; onClose: () => void; onN
 
 const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const router = useRouter();
+  const { usuario, logout } = useAuth();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
@@ -212,6 +233,11 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
   const closeDropdown = () => {
     setActiveDropdown(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/usuario/login');
   };
 
   const handleNavigation = (page: string) => {
@@ -358,6 +384,32 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
               <span className="text-xs sm:text-sm text-green-400">Sistema Activo</span>
             </div>
             
+            {/* Menú de usuario */}
+            <div className="relative">
+              <button
+                onClick={() => handleDropdownToggle('usuario')}
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                <User className="h-4 w-4" />
+                <span className="text-sm hidden sm:block">{usuario?.email || 'Usuario'}</span>
+                <ChevronDown className={`h-3 w-3 transition-transform ${activeDropdown === 'usuario' ? 'rotate-180' : ''}`} />
+              </button>
+              <DropdownMenu isOpen={activeDropdown === 'usuario'} onClose={closeDropdown}>
+                <MenuItem
+                  icon={<User className="h-4 w-4" />}
+                  title={usuario?.email || 'Usuario'}
+                  description={usuario?.email || ''}//usuario@ejemplo.com
+                  onClick={() => {}}
+                />
+                <MenuItem
+                  icon={<LogOut className="h-4 w-4" />}
+                  title="Cerrar Sesión"
+                  description="Salir del sistema"
+                  onClick={handleLogout}
+                />
+              </DropdownMenu>
+            </div>
+            
             <button className="hidden sm:block p-2 hover:bg-gray-700 rounded-lg transition-colors">
               <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
@@ -379,6 +431,15 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
             <Menu className="h-5 w-5" />
           </button>
           
+          {/* Botón de cerrar sesión móvil */}
+          <button 
+            onClick={handleLogout}
+            className="md:hidden p-2 hover:bg-gray-700 rounded-lg transition-colors"
+            title="Cerrar sesión"
+          >
+            <LogOut className="h-5 w-5" />
+          </button>
+          
           <button className="hidden md:block p-2 hover:bg-gray-700 rounded-lg transition-colors">
             <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
@@ -390,6 +451,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
         isOpen={mobileNavOpen} 
         onClose={() => setMobileNavOpen(false)}
         onNavigation={handleNavigation}
+        onLogout={handleLogout}
       />
     </header>
   );

@@ -88,7 +88,26 @@ const EmpleadoModal: React.FC<EmpleadoModalProps> = ({
           handleCloseModal();
         }
       } else if (modalType === 'edit' && selectedEmpleado) {
-        const result = await updateEmpleado(selectedEmpleado.id, formData);
+        const empleadoData = {
+          nombre: formData.nombre,
+          apellido_paterno: formData.apellido_paterno,
+          apellido_materno: formData.apellido_materno,
+          ci: formData.ci,
+          telefono: formData.telefono,
+          email: formData.email,
+          fecha_nacimiento: formData.fecha_nacimiento,
+          cargo: formData.cargo,
+          departamento: formData.departamento,
+          salario: formData.salario,
+          horario_entrada: formData.horario_entrada,
+          horario_salida: formData.horario_salida,
+          dias_trabajo: formData.dias_trabajo,
+          estado: formData.estado,
+          foto_registrada: formData.foto_registrada,
+          observaciones: formData.observaciones
+        };
+        console.log(empleadoData);
+        const result = await updateEmpleado(selectedEmpleado.id, empleadoData as any);
         if (result) {
           onRefresh();
           handleCloseModal();

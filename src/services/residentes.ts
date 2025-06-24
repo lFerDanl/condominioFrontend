@@ -202,3 +202,91 @@ export type Vivienda = {
       return false;
     }
   } 
+
+
+  export async function createVivienda(viviendaData: Vivienda): Promise<Vivienda | null> {
+    try {
+      const response = await fetch('http://localhost:3001/viviendas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(viviendaData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;      
+    } catch (error) {
+      console.error("Error al crear la vivienda:", error);
+      return null;
+    }
+  }
+
+  export async function updateVivienda(id: number, viviendaData: Vivienda): Promise<Vivienda | null> {
+    try {
+      const response = await fetch(`http://localhost:3001/viviendas/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(viviendaData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error al actualizar la vivienda:", error);   
+      return null;
+    }
+  }
+
+  export async function deleteVivienda(id: number): Promise<boolean> {
+    try {
+      const response = await fetch(`http://localhost:3001/viviendas/${id}`, {
+        method: 'DELETE',
+      });
+
+      return response.ok;
+    } catch (error) {
+      console.error("Error al eliminar la vivienda:", error);
+      return false;
+    }
+  }
+
+  export async function getViviendas(): Promise<Vivienda[]> {   
+    try {
+      const response = await fetch('http://localhost:3001/viviendas');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error al obtener las viviendas:", error);  
+      return [];
+    }
+  }
+
+  export async function getVivienda(id: number): Promise<Vivienda | null> {
+    try {
+      const response = await fetch(`http://localhost:3001/viviendas/${id}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error al obtener la vivienda:", error);
+      return null;
+    }
+  }
